@@ -1,0 +1,16 @@
+name: ViewTune
+version: '${version}'
+main: dev.viewtune.ViewTunePlugin
+api-version: '1.21'
+description: Per-player view and simulation distance, with TPS-adaptive throttling.
+author: arvidhqx-commits
+folia-supported: true
+commands:
+  viewtune:
+    description: ViewTune status and administration.
+    usage: /viewtune [status|players|savings|reload]
+    aliases: [vt]
+permissions:
+  viewtune.admin:
+    description: Use the /viewtune command.
+    default: op

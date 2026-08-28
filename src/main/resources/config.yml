@@ -1,0 +1,66 @@
+# ViewTune — gives every player the view distance they actually asked for,
+# instead of loading the same big radius for everyone.
+#
+# Distances are in chunks. 2 is the smallest value Minecraft accepts.
+# Anywhere below, -1 means "use the server's own value from server.properties".
+version: 1
+
+# How often every online player is re-checked, in seconds.
+interval-seconds: 5
+
+view:
+  # Never go below this, even if the client asks for less.
+  min: 2
+  # Never go above this, even if the client asks for more.
+  max: -1
+  # Raising a player's distance happens at once. Lowering waits this long, so a
+  # player dragging their render-distance slider does not thrash the chunk system.
+  lower-delay-seconds: 10
+
+simulation:
+  # Simulation distance is the expensive one: mobs, redstone, crops, hoppers.
+  enabled: true
+  min: 2
+  max: -1
+  # Keep simulation distance from exceeding what the player can actually see.
+  never-above-view: true
+
+adaptive:
+  # Lowers the ceiling for everyone while the server struggles and raises it back
+  # once it recovers — one chunk per interval, so the adjustment is not itself a spike.
+  enabled: true
+  low-tps: 18.0
+  recover-tps: 19.5
+  floor: 4
+
+player-scaling:
+  # Lower the ceiling as the server fills up. The highest reached entry wins.
+  enabled: false
+  thresholds:
+    - players: 40
+      max-view: 8
+    - players: 80
+      max-view: 6
+
+permission-caps:
+  # viewtune.view.<n> lets a player reach view distance <n>.
+  # viewtune.sim.<n>  does the same for simulation distance.
+  # The highest number a player holds wins; without any node the limits above apply.
+  # Handy for ranks: give donors viewtune.view.16 and everyone else viewtune.view.8.
+  enabled: true
+  # Highest node number that is looked up. Keep it near your real maximum.
+  scan-up-to: 32
+
+# Per-world overrides. Anything you leave out falls back to the values above.
+# worlds:
+#   world_the_end:
+#     view:
+#       max: 8
+#     simulation:
+#       max: 4
+worlds: {}
+
+messages:
+  prefix: "<gray>[<aqua>ViewTune</aqua>]</gray> "
+  no-permission: "<red>You may not do that.</red>"
+  reloaded: "<green>Configuration reloaded.</green>"
