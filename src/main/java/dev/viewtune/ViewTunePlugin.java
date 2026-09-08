@@ -58,8 +58,24 @@ public final class ViewTunePlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        restoreAll(getServer().getOnlinePlayers());
         lowerAfter.clear();
         applied.clear();
+    }
+
+    /**
+     * Setzt jeden Spieler, dem ViewTune eine eigene Distanz gegeben hat, auf die
+     * Servervorgabe zurueck. Sicht- und Simulationsdistanz gehoeren zur Verbindung des
+     * Spielers, nicht zum Plugin: ohne dieses Aufraeumen behaelt ein beim TPS-Einbruch
+     * auf 2 Chunks gedrosselter Spieler diese 2 Chunks, bis er sich neu verbindet —
+     * auch wenn ViewTune laengst entfernt ist (gefunden 07.09.2026).
+     */
+    void restoreAll(java.util.Collection<? extends Player> online) {
+        for (Player p : online) {
+            if (applied.remove(p.getUniqueId()) == null) continue;
+            p.setViewDistance(serverView());
+            if (simEnabled) p.setSimulationDistance(serverSim());
+        }
     }
 
     // --- Konfiguration --------------------------------------------------------------------
